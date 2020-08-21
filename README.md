@@ -1,7 +1,7 @@
 # ViTee
 **ViTee is tool based in Python that allows you to leverage Virus Total's API**
 
-VT-CLI allows you to provide a single source file with your IOCs and get a report for the below
+ViTee allows you to provide a single source file with your IOCs and get a report for the below
 
    *  URLs
    *  IPs
