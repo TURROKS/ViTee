@@ -102,7 +102,7 @@ def comb_files(report_file):
                    'hash_scan_date']
 
     df = pd.read_csv('temp_report.csv', names=header_list)
-    df.to_csv('{}.csv'.format(report_file))
+    df.to_csv('{}.csv'.format(report_file), index=False)
 
 
 def ip_report(api_k, counter, ip):
