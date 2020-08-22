@@ -24,7 +24,7 @@ You can run python vitee.py -h to get the help menu
 required arguments:
 
     -i, --infile  Input File (takes txt and csv)
-    -o, --outfile Output File (returns csv)
+    -o, --outfile Output File (returns csv, there's no need to add .csv extension to the file name)
 
 optional arguments:
 
