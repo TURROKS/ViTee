@@ -340,13 +340,42 @@ def domain_report(api_k, counter, domain):
                     dest.write(data['detected_downloaded_samples'][item]['sha256'] + '\n')
                 except (KeyError, IndexError):
                     dest.write('' + '\n')
-                # if domain in temp_domain:
-                #     pass
-                # else:
-                #     temp_domain.append(domain)
-                #     sys.stdout.write(
-                #         '({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), domain))
-                #     sys.stdout.write('\n')
+                try:
+                    if data['detected_downloaded_samples'][item]['sha256'] not in temp_domain:
+                        temp_domain.append(data['detected_downloaded_samples'][item]['sha256'])
+                        sys.stdout.write('({}/{}) Domain {} downloaded_sample {}'.format(
+                            str(data['detected_downloaded_samples'][item]['total']),
+                            str(data['detected_downloaded_samples'][item]['positives']), domain,
+                            data['detected_downloaded_samples'][item]['sha256']))
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                except IndexError:
+                    pass
+                try:
+                    if data['detected_referrer_samples'][item]['sha256'] not in temp_domain:
+                        temp_domain.append(data['detected_referrer_samples'][item]['sha256'])
+                        sys.stdout.write('({}/{}) Domain {} referrer_sample {}'.format(
+                            str(data['detected_referrer_samples'][item]['total']),
+                            str(data['detected_referrer_samples'][item]['positives']), domain,
+                            data['detected_referrer_samples'][item]['sha256']))
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                except IndexError:
+                    pass
+                try:
+                    if data['detected_urls'][item]['url'] not in temp_domain:
+                        temp_domain.append(data['detected_urls'][item]['url'])
+                        sys.stdout.write('({}/{}) Domain {} linked url {}'.format(
+                            str(data['detected_urls'][item]['total']),
+                            str(data['detected_urls'][item]['positives']), domain,
+                            data['detected_urls'][item]['url']))
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                except IndexError:
+                    pass
         elif data['response_code'] == 0:
             sys.stdout.write('Domain {} not found in Virus Total'.format(domain))
             sys.stdout.write('\n')
@@ -408,7 +437,7 @@ def url_report(api_k, counter, url_check):
                         pass
                     else:
                         temp_url.append(url_check)
-                        sys.stdout.write('({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), url_check))
+                        sys.stdout.write('({}/{}) URL {}'.format(str(data['total']), str(data['positives']), url_check))
                         sys.stdout.write('\n')
                 else:
                     pass
@@ -488,7 +517,7 @@ def hash_report(api_k, counter, hash_check):
                         pass
                     else:
                         temp_hash.append(hash_check)
-                        sys.stdout.write('({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), hash_check))
+                        sys.stdout.write('({}/{}) Hash {}'.format(str(data['total']), str(data['positives']), hash_check))
                         sys.stdout.write('\n')
                 else:
                     pass
@@ -521,11 +550,24 @@ def worker(api_k, inf, api_type):
         urlfilecnt = 0
         hashfilecnt = 0
         dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
+        sys.stdout.write(colored("""
+                                              ___           ___     
+      ___                                    /\__\         /\__\    
+     /\  \        ___           ___         /:/ _/_       /:/ _/_   
+     \:\  \      /\__\         /\__\       /:/ /\__\     /:/ /\__\  
+      \:\  \    /:/__/        /:/  /      /:/ /:/ _/_   /:/ /:/ _/_ 
+  ___  \:\__\  /::\  \       /:/__/      /:/_/:/ /\__\ /:/_/:/ /\__
+ /\  \ |:|  |  \/\:\  \__   /::\  \      \:\/:/ /:/  / \:\/:/ /:/  /
+ \:\  \|:|  |   ~~\:\/\__\ /:/\:\  \      \::/_/:/  /   \::/_/:/  / 
+  \:\__|:|__|      \::/  / \/__\:\  \      \:\/:/  /     \:\/:/  /  
+   \::::/__/       /:/  /       \:\__\      \::/  /       \::/  /   
+    ~~~~           \/__/         \/__/       \/__/         \/__/    
+    """, 'green'))
+        sys.stdout.write('\n')
         sys.stdout.write('You have selected the Free API version')
         sys.stdout.write('\n')
         sys.stdout.write('\n')
-        sys.stdout.write('Checking Unique IOCs')
-        sys.stdout.write('\n')
+        sys.stdout.write('### Checking Unique IOCs ###')
         sys.stdout.write('\n')
         # print('your api is {}'.format(api_k))
         with open(inf, 'r') as file:
