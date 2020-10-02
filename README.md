@@ -19,6 +19,10 @@ With the required modules installed you can now use the script to generate your 
 
 i.e. python vitee.py -i source.txt -o dest.csv -m 1
 
+Once you run the command you will see the following windown, which details the IOCs to be queried after removing duplicates.
+
+![Startup](https://github.com/TURROKS/ViTee/blob/master/examples/images/startup.png)
+
 Output Example
 
 ![Results](https://github.com/TURROKS/ViTee/blob/master/examples/images/results.PNG)
