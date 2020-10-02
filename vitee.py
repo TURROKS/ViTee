@@ -6,7 +6,11 @@ import iocextract
 import os
 import glob
 import pandas as pd
+import sys
+from termcolor import colored, cprint
+from colorama import init
 
+init()
 # ConfigParser Setup
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -35,18 +39,16 @@ def clean_dir():
     for f in glob.glob('*_result_*.txt'):
 
         if f:
-            #print('file {} will be removed '.format(f))
             os.remove(f)
         else:
-            print('No files found')
+            pass
 
     for f in glob.glob('temp_*'):
 
         if f:
-            #print('file {} will be removed '.format(f))
             os.remove(f)
         else:
-            print('No files found')
+            pass
 
 
 def comb_files(report_file):
@@ -199,7 +201,7 @@ def ip_report(api_k, counter, ip):
                     dest.write('' + '\n')
 
         elif data['response_code'] == 0:
-            print('IP not found in Virus Total')
+            sys.stdout.write('IP {} not found in Virus Total'.format(ip))
 
         else:
             pass
@@ -337,7 +339,7 @@ def domain_report(api_k, counter, domain):
                 except (KeyError, IndexError):
                     dest.write('' + '\n')
         elif data['response_code'] == 0:
-            print('Domain not found in Virus Total')
+            sys.stdout.write('Domain {} not found in Virus Total'.format(domain))
         else:
             pass
 
@@ -394,7 +396,7 @@ def url_report(api_k, counter, url_check):
                 else:
                     pass
         elif data['response_code'] == 0:
-            print('URL not found in Virus Total')
+            sys.stdout.write('URL {} not found in Virus Total'.format(url_check))
         else:
             pass
 
@@ -462,7 +464,7 @@ def hash_report(api_k, counter, hash_check):
                 else:
                     pass
         elif data['response_code'] == 0:
-            print('URL not found in Virus Total')
+            sys.stdout.write('Hash {} not found in Virus Total'.format(hash_check))
         else:
             pass
 
@@ -472,7 +474,7 @@ def update_key(api_key):
     config.set('access', 'key', api_key)
     with open('config.ini', 'w') as configFile:
         config.write(configFile)
-    print('Your API {} has been updated'.format(args.update))
+    sys.stdout.write('Your API {} has been updated'.format(args.update))
 
 
 def worker(api_k, inf, api_type):
@@ -484,7 +486,8 @@ def worker(api_k, inf, api_type):
         urlfilecnt = 0
         hashfilecnt = 0
         dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
-        print('You have selected the Free API version')
+        sys.stdout.write('You have selected the Free API version')
+        sys.stdout.write('\n')
         # print('your api is {}'.format(api_k))
         with open(inf, 'r') as file:
             # Check the input file for IOCs
@@ -493,30 +496,30 @@ def worker(api_k, inf, api_type):
                 for ip in iocextract.extract_ipv4s(line, refang=True):
                     if ip not in IPs:
                         IPs.append(ip)
-                        print(ip)
+                        sys.stdout.write(ip)
                     else:
-                        print('IP {} Already in List'.format(ip))
+                        sys.stdout.write('IP {} Already in List'.format(ip))
 
                 for dom in iocextract.extract_custom_iocs(line, dom_rex):
                     if dom not in Domains:
                         Domains.append(dom)
-                        print(dom)
+                        sys.stdout.write(dom)
                     else:
-                        print('Domain {} Already in List'.format(dom))
+                        sys.stdout.write('Domain {} Already in List'.format(dom))
 
                 for url in iocextract.extract_urls(line, refang=True):
                     if url not in URLs:
                         URLs.append(url)
-                        print(url)
+                        sys.stdout.write(url)
                     else:
-                        print('URL {} Already in List'.format(url))
+                        sys.stdout.write('URL {} Already in List'.format(url))
 
                 for hash_check in iocextract.extract_hashes(line):
                     if hash_check not in Hashes:
                         Hashes.append(hash_check)
-                        print(hash_check)
+                        sys.stdout.write(hash_check)
                     else:
-                        print('Hash {} Already in List'.format(hash_check))
+                        sys.stdout.write('Hash {} Already in List'.format(hash_check))
 
             # Get the IPs from the list to be queried
             for ip in IPs:
@@ -540,18 +543,19 @@ def worker(api_k, inf, api_type):
                 sleep(15)
 
     elif api_type == 2:
-        print('You have selected the Paid API version')
+        sys.stdout.write('You have selected the Paid API version')
+        sys.stdout.write('\n')
         with open(inf, 'r') as file:
             for line in file:
                 for ip in iocextract.extract_ipv4s(line, refang=True):
                     if ip not in IPs:
                         IPs.append(ip)
-                        print(ip)
+                        sys.stdout.write(ip)
                     else:
-                        print(ip + ' Already in List')
+                        sys.stdout.write(ip + ' Already in List')
                 sleep(0)
     else:
-        print('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
+        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
 
 
 def main():
@@ -566,9 +570,9 @@ def main():
             comb_files(args.outfile)
             clean_dir()
         else:
-            print('Missing Parameters')
+            sys.stdout.write('Missing Parameters')
     else:
-        print('No API found in conf')
+        sys.stdout.write(colored('No API found in conf', 'red'))
 
 
 if __name__ == '__main__':
