@@ -2,7 +2,6 @@ venv/
 test.py
 Tests/test1.py
 Tests/test2.py
-config.ini
 .idea
 .DS_Store
 
