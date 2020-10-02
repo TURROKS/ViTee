@@ -202,6 +202,7 @@ def ip_report(api_k, counter, ip):
 
         elif data['response_code'] == 0:
             sys.stdout.write('IP {} not found in Virus Total'.format(ip))
+            sys.stdout.write('\n')
 
         else:
             pass
@@ -217,6 +218,7 @@ def domain_report(api_k, counter, domain):
         response = requests.get(url, params=params)
         data = response.json()
         max_num = []
+        temp_domain = []
 
         if data['response_code'] == 1:
 
@@ -338,8 +340,16 @@ def domain_report(api_k, counter, domain):
                     dest.write(data['detected_downloaded_samples'][item]['sha256'] + '\n')
                 except (KeyError, IndexError):
                     dest.write('' + '\n')
+                # if domain in temp_domain:
+                #     pass
+                # else:
+                #     temp_domain.append(domain)
+                #     sys.stdout.write(
+                #         '({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), domain))
+                #     sys.stdout.write('\n')
         elif data['response_code'] == 0:
             sys.stdout.write('Domain {} not found in Virus Total'.format(domain))
+            sys.stdout.write('\n')
         else:
             pass
 
@@ -354,6 +364,7 @@ def url_report(api_k, counter, url_check):
         response = requests.get(url, params=params)
         data = response.json()
         url_filter = ['clean site', 'unrated site']
+        temp_url = []
 
         if data['response_code'] == 1:
 
@@ -393,10 +404,21 @@ def url_report(api_k, counter, url_check):
                         dest.write(data['scans'][key]['result'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
+                    if url_check in temp_url:
+                        pass
+                    else:
+                        temp_url.append(url_check)
+                        sys.stdout.write('({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), url_check))
+                        sys.stdout.write('\n')
                 else:
                     pass
         elif data['response_code'] == 0:
-            sys.stdout.write('URL {} not found in Virus Total'.format(url_check))
+            if url_check in temp_url:
+                pass
+            else:
+                temp_url.append(url_check)
+                sys.stdout.write(colored('URL {} not found in Virus Total', 'green').format(url_check))
+                sys.stdout.write('\n')
         else:
             pass
 
@@ -410,6 +432,7 @@ def hash_report(api_k, counter, hash_check):
         params = {'apikey': api_k, 'resource': hash_check}
         response = requests.get(url, params=params)
         data = response.json()
+        temp_hash = []
 
         if data['response_code'] == 1:
 
@@ -461,10 +484,21 @@ def hash_report(api_k, counter, hash_check):
                         dest.write(data['scan_date'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
+                    if hash_check in temp_hash:
+                        pass
+                    else:
+                        temp_hash.append(hash_check)
+                        sys.stdout.write('({}/{}) Detection ration for {}'.format(str(data['total']), str(data['positives']), hash_check))
+                        sys.stdout.write('\n')
                 else:
                     pass
         elif data['response_code'] == 0:
-            sys.stdout.write('Hash {} not found in Virus Total'.format(hash_check))
+            if hash_check in temp_hash:
+                pass
+            else:
+                temp_hash.append(hash_check)
+                sys.stdout.write(colored('Hash {} not found in Virus Total', 'green').format(hash_check))
+                sys.stdout.write('\n')
         else:
             pass
 
@@ -475,6 +509,7 @@ def update_key(api_key):
     with open('config.ini', 'w') as configFile:
         config.write(configFile)
     sys.stdout.write('Your API {} has been updated'.format(args.update))
+    sys.stdout.write('\n')
 
 
 def worker(api_k, inf, api_type):
@@ -488,6 +523,10 @@ def worker(api_k, inf, api_type):
         dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
         sys.stdout.write('You have selected the Free API version')
         sys.stdout.write('\n')
+        sys.stdout.write('\n')
+        sys.stdout.write('Checking Unique IOCs')
+        sys.stdout.write('\n')
+        sys.stdout.write('\n')
         # print('your api is {}'.format(api_k))
         with open(inf, 'r') as file:
             # Check the input file for IOCs
@@ -497,29 +536,44 @@ def worker(api_k, inf, api_type):
                     if ip not in IPs:
                         IPs.append(ip)
                         sys.stdout.write(ip)
+                        sys.stdout.write('\n')
                     else:
-                        sys.stdout.write('IP {} Already in List'.format(ip))
+                        pass
+                        #sys.stdout.write('IP {} Already in List'.format(ip))
+                        #sys.stdout.write('\n')
 
                 for dom in iocextract.extract_custom_iocs(line, dom_rex):
                     if dom not in Domains:
                         Domains.append(dom)
                         sys.stdout.write(dom)
+                        sys.stdout.write('\n')
                     else:
-                        sys.stdout.write('Domain {} Already in List'.format(dom))
+                        pass
+                        #sys.stdout.write('Domain {} Already in List'.format(dom))
+                        #sys.stdout.write('\n')
 
                 for url in iocextract.extract_urls(line, refang=True):
                     if url not in URLs:
                         URLs.append(url)
                         sys.stdout.write(url)
+                        sys.stdout.write('\n')
                     else:
-                        sys.stdout.write('URL {} Already in List'.format(url))
+                        pass
+                        #sys.stdout.write('URL {} Already in List'.format(url))
+                        #sys.stdout.write('\n')
 
                 for hash_check in iocextract.extract_hashes(line):
                     if hash_check not in Hashes:
                         Hashes.append(hash_check)
                         sys.stdout.write(hash_check)
+                        sys.stdout.write('\n')
                     else:
-                        sys.stdout.write('Hash {} Already in List'.format(hash_check))
+                        pass
+                        #sys.stdout.write('Hash {} Already in List'.format(hash_check))
+                        #sys.stdout.write('\n')
+            sys.stdout.write('\n')
+            sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
+            sys.stdout.write('\n')
 
             # Get the IPs from the list to be queried
             for ip in IPs:
@@ -543,8 +597,9 @@ def worker(api_k, inf, api_type):
                 sleep(15)
 
     elif api_type == 2:
-        sys.stdout.write('You have selected the Paid API version')
-        sys.stdout.write('\n')
+        sys.stdout.write('### You have selected the Paid API version ###')
+        sys.stdout.write('\n\n')
+
         with open(inf, 'r') as file:
             for line in file:
                 for ip in iocextract.extract_ipv4s(line, refang=True):
@@ -553,9 +608,11 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write(ip)
                     else:
                         sys.stdout.write(ip + ' Already in List')
+                        sys.stdout.write('\n')
                 sleep(0)
     else:
         sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
+        sys.stdout.write('\n')
 
 
 def main():
@@ -571,8 +628,10 @@ def main():
             clean_dir()
         else:
             sys.stdout.write('Missing Parameters')
+            sys.stdout.write('\n')
     else:
         sys.stdout.write(colored('No API found in conf', 'red'))
+        sys.stdout.write('\n')
 
 
 if __name__ == '__main__':
