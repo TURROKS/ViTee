@@ -19,6 +19,10 @@ With the required modules installed you can now use the script to generate your 
 
 i.e. python vitee.py -i source.txt -o dest.csv -m 1
 
+Output Example
+
+
+
 You can run python vitee.py -h to get the help menu
 
 required arguments:

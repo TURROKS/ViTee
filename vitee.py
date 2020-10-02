@@ -104,7 +104,10 @@ def comb_files(report_file):
                    'hash_scan_date']
 
     df = pd.read_csv('temp_report.csv', names=header_list)
-    df.to_csv('{}.csv'.format(report_file), index=False)
+    try:
+        df.to_csv('{}.csv'.format(report_file), index=False)
+    except PermissionError:
+        sys.stdout.write('Error Saving File, check if the file is being used!')
 
 
 def ip_report(api_k, counter, ip):
@@ -345,7 +348,7 @@ def domain_report(api_k, counter, domain):
                         temp_domain.append(data['detected_downloaded_samples'][item]['sha256'])
                         sys.stdout.write('({}/{}) Domain {} downloaded_sample {}'.format(
                             str(data['detected_downloaded_samples'][item]['total']),
-                            str(data['detected_downloaded_samples'][item]['positives']), domain,
+                            colored(str(data['detected_downloaded_samples'][item]['positives']), 'red'), domain,
                             data['detected_downloaded_samples'][item]['sha256']))
                         sys.stdout.write('\n')
                     else:
@@ -357,7 +360,7 @@ def domain_report(api_k, counter, domain):
                         temp_domain.append(data['detected_referrer_samples'][item]['sha256'])
                         sys.stdout.write('({}/{}) Domain {} referrer_sample {}'.format(
                             str(data['detected_referrer_samples'][item]['total']),
-                            str(data['detected_referrer_samples'][item]['positives']), domain,
+                            colored(str(data['detected_referrer_samples'][item]['positives']), 'red'), domain,
                             data['detected_referrer_samples'][item]['sha256']))
                         sys.stdout.write('\n')
                     else:
@@ -369,7 +372,7 @@ def domain_report(api_k, counter, domain):
                         temp_domain.append(data['detected_urls'][item]['url'])
                         sys.stdout.write('({}/{}) Domain {} linked url {}'.format(
                             str(data['detected_urls'][item]['total']),
-                            str(data['detected_urls'][item]['positives']), domain,
+                            colored(str(data['detected_urls'][item]['positives']), 'red'), domain,
                             data['detected_urls'][item]['url']))
                         sys.stdout.write('\n')
                     else:
@@ -437,7 +440,7 @@ def url_report(api_k, counter, url_check):
                         pass
                     else:
                         temp_url.append(url_check)
-                        sys.stdout.write('({}/{}) URL {}'.format(str(data['total']), str(data['positives']), url_check))
+                        sys.stdout.write('({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'red'), url_check))
                         sys.stdout.write('\n')
                 else:
                     pass
@@ -517,7 +520,7 @@ def hash_report(api_k, counter, hash_check):
                         pass
                     else:
                         temp_hash.append(hash_check)
-                        sys.stdout.write('({}/{}) Hash {}'.format(str(data['total']), str(data['positives']), hash_check))
+                        sys.stdout.write('({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'red'), hash_check))
                         sys.stdout.write('\n')
                 else:
                     pass
