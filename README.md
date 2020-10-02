@@ -21,7 +21,7 @@ i.e. python vitee.py -i source.txt -o dest.csv -m 1
 
 Output Example
 
-
+![Results](https://github.com/TURROKS/ViTee/blob/master/examples/images/results.PNG)
 
 You can run python vitee.py -h to get the help menu
 
