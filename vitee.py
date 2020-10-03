@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+
+__author__ = "Mario Rojas"
+__license__ = "MIT"
+__version__ = "1.0.3"
+__maintainer__ = "Mario Rojas"
+__status__ = "Production"
+
 import argparse
 import configparser
 from time import sleep
@@ -119,6 +127,7 @@ def ip_report(api_k, counter, ip):
         response = requests.get(url, params=params)
         data = response.json()
         max_num = []
+        temp_ip = []
 
         if data['response_code'] == 1:
 
@@ -202,7 +211,30 @@ def ip_report(api_k, counter, ip):
                     dest.write(data['network'] + '\n')
                 except (KeyError, IndexError):
                     dest.write('' + '\n')
-
+                try:
+                    if data['detected_downloaded_samples'][item]['sha256'] not in temp_ip:
+                        temp_ip.append(data['detected_communicating_samples'][item]['sha256'])
+                        sys.stdout.write('({}/{}) IP {} communicating_sample {}'.format(
+                            str(data['detected_communicating_samples'][item]['total']),
+                            colored(str(data['detected_communicating_samples'][item]['positives']), 'red'), ip,
+                            data['detected_communicating_samples'][item]['sha256']))
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                except (KeyError, IndexError):
+                    pass
+                try:
+                    if data['detected_urls'][item]['url'] not in temp_ip:
+                        temp_ip.append(data['detected_urls'][item]['url'])
+                        sys.stdout.write('({}/{}) IP {} detected_url {}'.format(
+                            str(data['detected_urls'][item]['total']),
+                            colored(str(data['detected_urls'][item]['positives']), 'red'), ip,
+                            data['detected_urls'][item]['url']))
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                except (KeyError, IndexError):
+                    pass
         elif data['response_code'] == 0:
             sys.stdout.write('IP {} not found in Virus Total'.format(ip))
             sys.stdout.write('\n')
@@ -353,7 +385,7 @@ def domain_report(api_k, counter, domain):
                         sys.stdout.write('\n')
                     else:
                         pass
-                except IndexError:
+                except (KeyError, IndexError):
                     pass
                 try:
                     if data['detected_referrer_samples'][item]['sha256'] not in temp_domain:
@@ -365,7 +397,7 @@ def domain_report(api_k, counter, domain):
                         sys.stdout.write('\n')
                     else:
                         pass
-                except IndexError:
+                except (KeyError, IndexError):
                     pass
                 try:
                     if data['detected_urls'][item]['url'] not in temp_domain:
@@ -377,7 +409,7 @@ def domain_report(api_k, counter, domain):
                         sys.stdout.write('\n')
                     else:
                         pass
-                except IndexError:
+                except (KeyError, IndexError):
                     pass
         elif data['response_code'] == 0:
             sys.stdout.write('Domain {} not found in Virus Total'.format(domain))
@@ -436,14 +468,26 @@ def url_report(api_k, counter, url_check):
                         dest.write(data['scans'][key]['result'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
-                    if url_check in temp_url:
-                        pass
-                    else:
+                    if url_check not in temp_url:
                         temp_url.append(url_check)
-                        sys.stdout.write('({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'red'), url_check))
+                        sys.stdout.write(
+                            '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'red'),
+                                                    url_check))
                         sys.stdout.write('\n')
+                    else:
+                        pass
                 else:
-                    pass
+                    if url_check not in temp_url:
+                        if int(data['positives']) == 0:
+                            temp_url.append(url_check)
+                            sys.stdout.write(
+                                '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
+                                                        url_check))
+                            sys.stdout.write('\n')
+                        else:
+                            pass
+                    else:
+                        pass
         elif data['response_code'] == 0:
             if url_check in temp_url:
                 pass
@@ -516,14 +560,26 @@ def hash_report(api_k, counter, hash_check):
                         dest.write(data['scan_date'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
-                    if hash_check in temp_hash:
-                        pass
-                    else:
+                    if hash_check not in temp_hash:
                         temp_hash.append(hash_check)
-                        sys.stdout.write('({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'red'), hash_check))
+                        sys.stdout.write(
+                            '({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'red'),
+                                                     hash_check))
                         sys.stdout.write('\n')
+                    else:
+                        pass
                 else:
-                    pass
+                    if hash_check not in temp_hash:
+                        if int(data['positives']) == 0:
+                            temp_hash.append(hash_check)
+                            sys.stdout.write(
+                                '({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
+                                                         hash_check))
+                            sys.stdout.write('\n')
+                        else:
+                            pass
+                    else:
+                        pass
         elif data['response_code'] == 0:
             if hash_check in temp_hash:
                 pass
