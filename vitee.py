@@ -40,6 +40,7 @@ URLs = []
 Files = []
 Emails = []
 Domains = []
+Total_IOCs = 0
 
 
 def clean_dir():
@@ -600,11 +601,47 @@ def update_key(api_key):
     sys.stdout.write('\n')
 
 
+def wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, domain_list):
+
+    if api_type == 1:
+
+        count = (len(ip_list) + len(hash_list) + len(url_list) + len(file_list) + len(email_list) + len(domain_list))*15
+
+        if count < 60:
+            sys.stdout.write("Approximate wait time {} Seconds..".format(count))
+            sys.stdout.write('\n')
+        elif count >= 60 and count < 3600:
+            mins = count/60
+            sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
+            sys.stdout.write('\n')
+        else:
+            hours = (count/60)/60
+            sys.stdout.write("Approximate wait time {} Hours..".format(hours))
+            sys.stdout.write('\n')
+    elif api_type == 2:
+
+        count = (ip_list + hash_list + url_list + file_list + email_list + domain_list)
+
+        if count < 60:
+            sys.stdout.write("Approximate wait time {} Seconds..".format(count))
+            sys.stdout.write('\n')
+        elif count >= 60 and count < 3600:
+            mins = count/60
+            sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
+            sys.stdout.write('\n')
+        else:
+            hours = (count/60)/60
+            sys.stdout.write("Approximate wait time {} Hours..".format(hours))
+            sys.stdout.write('\n')
+    else:
+        sys.stdout.write("Wrong Selection")
+
+
 def worker(api_k, inf, api_type):
     """Main Function"""
     if api_type == 1:
 
-        ipFileCnt = 1
+        ipFileCnt = 0
         domFileCnt = 0
         urlfilecnt = 0
         hashfilecnt = 0
@@ -672,6 +709,8 @@ def worker(api_k, inf, api_type):
                         pass
                         #sys.stdout.write('Hash {} Already in List'.format(hash_check))
                         #sys.stdout.write('\n')
+            sys.stdout.write('\n')
+            wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
             sys.stdout.write('\n')
             sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
             sys.stdout.write('\n')
@@ -762,6 +801,8 @@ def worker(api_k, inf, api_type):
                         pass
                         # sys.stdout.write('Hash {} Already in List'.format(hash_check))
                         # sys.stdout.write('\n')
+            sys.stdout.write('\n')
+            wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
             sys.stdout.write('\n')
             sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
             sys.stdout.write('\n')
