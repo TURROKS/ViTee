@@ -2,7 +2,7 @@
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
@@ -15,7 +15,7 @@ import os
 import glob
 import pandas as pd
 import sys
-from termcolor import colored, cprint
+from termcolor import colored
 from colorama import init
 
 init()
@@ -698,6 +698,26 @@ def worker(api_k, inf, api_type):
                 sleep(15)
 
     elif api_type == 2:
+
+        ipFileCnt = 0
+        domFileCnt = 0
+        urlfilecnt = 0
+        hashfilecnt = 0
+        dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
+        sys.stdout.write(colored("""
+                                                      ___           ___     
+              ___                                    /\__\         /\__\    
+             /\  \        ___           ___         /:/ _/_       /:/ _/_   
+             \:\  \      /\__\         /\__\       /:/ /\__\     /:/ /\__\  
+              \:\  \    /:/__/        /:/  /      /:/ /:/ _/_   /:/ /:/ _/_ 
+          ___  \:\__\  /::\  \       /:/__/      /:/_/:/ /\__\ /:/_/:/ /\__
+         /\  \ |:|  |  \/\:\  \__   /::\  \      \:\/:/ /:/  / \:\/:/ /:/  /
+         \:\  \|:|  |   ~~\:\/\__\ /:/\:\  \      \::/_/:/  /   \::/_/:/  / 
+          \:\__|:|__|      \::/  / \/__\:\  \      \:\/:/  /     \:\/:/  /  
+           \::::/__/       /:/  /       \:\__\      \::/  /       \::/  /   
+            ~~~~           \/__/         \/__/       \/__/         \/__/    
+            """, 'green'))
+        sys.stdout.write('\n')
         sys.stdout.write('### You have selected the Paid API version ###')
         sys.stdout.write('\n\n')
 
@@ -707,10 +727,65 @@ def worker(api_k, inf, api_type):
                     if ip not in IPs:
                         IPs.append(ip)
                         sys.stdout.write(ip)
-                    else:
-                        sys.stdout.write(ip + ' Already in List')
                         sys.stdout.write('\n')
-                sleep(0)
+                    else:
+                        pass
+                        # sys.stdout.write('IP {} Already in List'.format(ip))
+                        # sys.stdout.write('\n')
+
+                for dom in iocextract.extract_custom_iocs(line, dom_rex):
+                    if dom not in Domains:
+                        Domains.append(dom)
+                        sys.stdout.write(dom)
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                        # sys.stdout.write('Domain {} Already in List'.format(dom))
+                        # sys.stdout.write('\n')
+
+                for url in iocextract.extract_urls(line, refang=True):
+                    if url not in URLs:
+                        URLs.append(url)
+                        sys.stdout.write(url)
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                        # sys.stdout.write('URL {} Already in List'.format(url))
+                        # sys.stdout.write('\n')
+
+                for hash_check in iocextract.extract_hashes(line):
+                    if hash_check not in Hashes:
+                        Hashes.append(hash_check)
+                        sys.stdout.write(hash_check)
+                        sys.stdout.write('\n')
+                    else:
+                        pass
+                        # sys.stdout.write('Hash {} Already in List'.format(hash_check))
+                        # sys.stdout.write('\n')
+            sys.stdout.write('\n')
+            sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
+            sys.stdout.write('\n')
+
+            # Get the IPs from the list to be queried
+            for ip in IPs:
+                ip_report(api_k, ipFileCnt, ip)
+                ipFileCnt += 1
+                sleep(1)
+
+            for dom in Domains:
+                domain_report(api_k, domFileCnt, dom)
+                domFileCnt += 1
+                sleep(1)
+
+            for url in URLs:
+                url_report(api_k, urlfilecnt, url)
+                urlfilecnt += 1
+                sleep(1)
+
+            for hash_check in Hashes:
+                hash_report(api_k, hashfilecnt, hash_check)
+                hashfilecnt += 1
+                sleep(1)
     else:
         sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
         sys.stdout.write('\n')
