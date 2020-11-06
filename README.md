@@ -19,13 +19,13 @@ With the required modules installed you can now use the script to generate your 
 
 i.e. python vitee.py -i source.txt -o dest.csv -m 1
 
-Once you run the command you will see the following windown, which details the IOCs to be queried after removing duplicates.
+Once you run the command you will see the following window, which details the IOCs to be queried after removing duplicates.
 
-![Startup](https://github.com/TURROKS/ViTee/blob/master/examples/images/startup.png)
+![Startup](https://github.com/TURROKS/ViTee/blob/master/misc/startup.png)
 
 Output Example
 
-![Results](https://github.com/TURROKS/ViTee/blob/master/examples/images/results.PNG)
+![Results](https://github.com/TURROKS/ViTee/blob/master/misc/results.PNG)
 
 You can run python vitee.py -h to get the help menu
 
@@ -43,6 +43,8 @@ optional arguments:
 
 *Troubleshooting*
 
-If you face issues installing the iocextract library on Windows you might need to install C++ 14, this is usaully installed with Visual Studio but if you dont want to install the tool you can download and install the required libraries from [Visual C++ 2015 Build Tools](http://go.microsoft.com/fwlink/?LinkId=691126&fixForIE=.exe.)
+If you face issues installing the iocextract library on Windows you might need to install C++ 14, this is usually 
+installed with Visual Studio but if you don't want to install the tool you can download and install the required 
+libraries from [Visual C++ 2015 Build Tools](http://go.microsoft.com/fwlink/?LinkId=691126&fixForIE=.exe.)
 
 Enjoy the tool
