@@ -2,19 +2,19 @@
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
-import argparse
-import configparser
-from time import sleep
-import requests
-import iocextract
 import os
 import glob
-import pandas as pd
 import sys
+from time import sleep
+import argparse
+import configparser
+import requests
+import iocextract
+import pandas as pd
 from termcolor import colored
 from colorama import init
 
@@ -25,7 +25,8 @@ config.read('config.ini')
 key = config.get('access', 'key')
 
 # ArgParser Setup
-parser = argparse.ArgumentParser(description="This Tool leverages Virus Total's API for reporting", epilog='Enjoy the tool')
+parser = argparse.ArgumentParser(description="This Tool leverages Virus Total's API for reporting",
+                                 epilog='Enjoy the tool')
 parser.add_argument('-i', '--infile', type=str, help='Input File')
 parser.add_argument('-o', '--outfile', type=str, help='Output File')
 parser.add_argument('-a', '--api', type=str, default=key, help='Manually Enter API')
@@ -433,9 +434,9 @@ def url_report(api_k, counter, url_check):
 
         if data['response_code'] == 1:
 
-            for key in data['scans']:
+            for data_key in data['scans']:
 
-                if data['scans'][key]['result'] not in url_filter:
+                if data['scans'][data_key]['result'] not in url_filter:
 
                     dest.write('URL,')
                     dest.write(url_check.strip() + ',')
@@ -458,15 +459,15 @@ def url_report(api_k, counter, url_check):
                         dest.write('' + ',')
                     dest.write(',,,,,,,,,,,,,,,,,,')
                     try:
-                        dest.write('{},'.format(key))
+                        dest.write('{},'.format(data_key))
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['scans'][key]['detected']) + ',')
+                        dest.write(str(data['scans'][data_key]['detected']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scans'][key]['result'] + '\n')
+                        dest.write(data['scans'][data_key]['result'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
                     if url_check not in temp_url:
@@ -513,28 +514,28 @@ def hash_report(api_k, counter, hash_check):
 
         if data['response_code'] == 1:
 
-            for key in data['scans']:
+            for data_key in data['scans']:
 
-                if data['scans'][key]['detected']:
+                if data['scans'][data_key]['detected']:
 
                     dest.write('Hash,')
                     dest.write(hash_check.strip() + ',')
                     dest.write(',,,,,,,,,,,,,,,,,,,,,,,,,,,,')
                     try:
-                        dest.write('{},'.format(key))
+                        dest.write('{},'.format(data_key))
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['scans'][key]['detected']) + ',')
+                        dest.write(str(data['scans'][data_key]['detected']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     dest.write(',')
                     try:
-                        dest.write(str(data['scans'][key]['version'] + ','))
+                        dest.write(str(data['scans'][data_key]['version'] + ','))
                     except (KeyError, IndexError, TypeError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scans'][key]['result'] + ',')
+                        dest.write(data['scans'][data_key]['result'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
@@ -574,8 +575,8 @@ def hash_report(api_k, counter, hash_check):
                         if int(data['positives']) == 0:
                             temp_hash.append(hash_check)
                             sys.stdout.write(
-                                '({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
-                                                         hash_check))
+                                '({}/{}) Hash {}'.format(str(data['total']),
+                                                         colored(str(data['positives']), 'green'), hash_check))
                             sys.stdout.write('\n')
                         else:
                             pass
@@ -610,7 +611,7 @@ def wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, dom
         if count < 60:
             sys.stdout.write("Approximate wait time {} Seconds..".format(count))
             sys.stdout.write('\n')
-        elif count >= 60 and count < 3600:
+        elif 60 <= count < 3600:
             mins = count/60
             sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
             sys.stdout.write('\n')
@@ -625,7 +626,7 @@ def wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, dom
         if count < 60:
             sys.stdout.write("Approximate wait time {} Seconds..".format(count))
             sys.stdout.write('\n')
-        elif count >= 60 and count < 3600:
+        elif 60 <= count < 3600:
             mins = count/60
             sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
             sys.stdout.write('\n')
@@ -641,11 +642,11 @@ def worker(api_k, inf, api_type):
     """Main Function"""
     if api_type == 1:
 
-        ipFileCnt = 0
-        domFileCnt = 0
-        urlfilecnt = 0
-        hashfilecnt = 0
-        dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
+        ip_file_cnt = 0
+        dom_file_cnt = 0
+        url_file_cnt = 0
+        hash_file_cnt = 0
+        dom_rex = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
         sys.stdout.write(colored("""
                                               ___           ___     
       ___                                    /\__\         /\__\    
@@ -677,8 +678,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        #sys.stdout.write('IP {} Already in List'.format(ip))
-                        #sys.stdout.write('\n')
 
                 for dom in iocextract.extract_custom_iocs(line, dom_rex):
                     if dom not in Domains:
@@ -687,8 +686,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        #sys.stdout.write('Domain {} Already in List'.format(dom))
-                        #sys.stdout.write('\n')
 
                 for url in iocextract.extract_urls(line, refang=True):
                     if url not in URLs:
@@ -697,8 +694,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        #sys.stdout.write('URL {} Already in List'.format(url))
-                        #sys.stdout.write('\n')
 
                 for hash_check in iocextract.extract_hashes(line):
                     if hash_check not in Hashes:
@@ -707,8 +702,7 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        #sys.stdout.write('Hash {} Already in List'.format(hash_check))
-                        #sys.stdout.write('\n')
+
             sys.stdout.write('\n')
             wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
             sys.stdout.write('\n')
@@ -717,32 +711,32 @@ def worker(api_k, inf, api_type):
 
             # Get the IPs from the list to be queried
             for ip in IPs:
-                ip_report(api_k, ipFileCnt, ip)
-                ipFileCnt += 1
+                ip_report(api_k, ip_file_cnt, ip)
+                ip_file_cnt += 1
                 sleep(15)
 
             for dom in Domains:
-                domain_report(api_k, domFileCnt, dom)
-                domFileCnt += 1
+                domain_report(api_k, dom_file_cnt, dom)
+                dom_file_cnt += 1
                 sleep(15)
 
             for url in URLs:
-                url_report(api_k, urlfilecnt, url)
-                urlfilecnt += 1
+                url_report(api_k, url_file_cnt, url)
+                url_file_cnt += 1
                 sleep(15)
 
             for hash_check in Hashes:
-                hash_report(api_k, hashfilecnt, hash_check)
-                hashfilecnt += 1
+                hash_report(api_k, hash_file_cnt, hash_check)
+                hash_file_cnt += 1
                 sleep(15)
 
     elif api_type == 2:
 
-        ipFileCnt = 0
-        domFileCnt = 0
-        urlfilecnt = 0
-        hashfilecnt = 0
-        dom_rex = ['^([a-z0-9]{1,61}\.[a-z]{2,})$']
+        ip_file_cnt = 0
+        dom_file_cnt = 0
+        url_file_cnt = 0
+        hash_file_cnt = 0
+        dom_rex = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
         sys.stdout.write(colored("""
                                                       ___           ___     
               ___                                    /\__\         /\__\    
@@ -769,8 +763,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        # sys.stdout.write('IP {} Already in List'.format(ip))
-                        # sys.stdout.write('\n')
 
                 for dom in iocextract.extract_custom_iocs(line, dom_rex):
                     if dom not in Domains:
@@ -779,8 +771,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        # sys.stdout.write('Domain {} Already in List'.format(dom))
-                        # sys.stdout.write('\n')
 
                 for url in iocextract.extract_urls(line, refang=True):
                     if url not in URLs:
@@ -789,8 +779,6 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        # sys.stdout.write('URL {} Already in List'.format(url))
-                        # sys.stdout.write('\n')
 
                 for hash_check in iocextract.extract_hashes(line):
                     if hash_check not in Hashes:
@@ -799,8 +787,7 @@ def worker(api_k, inf, api_type):
                         sys.stdout.write('\n')
                     else:
                         pass
-                        # sys.stdout.write('Hash {} Already in List'.format(hash_check))
-                        # sys.stdout.write('\n')
+
             sys.stdout.write('\n')
             wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
             sys.stdout.write('\n')
@@ -809,23 +796,23 @@ def worker(api_k, inf, api_type):
 
             # Get the IPs from the list to be queried
             for ip in IPs:
-                ip_report(api_k, ipFileCnt, ip)
-                ipFileCnt += 1
+                ip_report(api_k, ip_file_cnt, ip)
+                ip_file_cnt += 1
                 sleep(1)
 
             for dom in Domains:
-                domain_report(api_k, domFileCnt, dom)
-                domFileCnt += 1
+                domain_report(api_k, dom_file_cnt, dom)
+                dom_file_cnt += 1
                 sleep(1)
 
             for url in URLs:
-                url_report(api_k, urlfilecnt, url)
-                urlfilecnt += 1
+                url_report(api_k, url_file_cnt, url)
+                url_file_cnt += 1
                 sleep(1)
 
             for hash_check in Hashes:
-                hash_report(api_k, hashfilecnt, hash_check)
-                hashfilecnt += 1
+                hash_report(api_k, hash_file_cnt, hash_check)
+                hash_file_cnt += 1
                 sleep(1)
     else:
         sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
