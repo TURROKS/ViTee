@@ -5,3 +5,4 @@ iocextract
 pandas
 termcolor
 colorama
+openpyxl
