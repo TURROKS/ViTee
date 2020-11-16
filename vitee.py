@@ -2,7 +2,7 @@
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.0.5"
+__version__ = "1.1.0"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
@@ -113,9 +113,25 @@ def comb_files(report_file):
                    'hash_positives',
                    'hash_scan_date']
 
-    df = pd.read_csv('temp_report.csv', names=header_list)
+    df = pd.read_csv('temp_report.csv', names=header_list, index_col=1)
     try:
-        df.to_csv('{}.csv'.format(report_file), index=False)
+#        df.to_csv('{}.csv'.format(report_file), index=False)
+        df_url_temp = df.loc[df['Type'] == 'URL']
+        df_domain_temp = df.loc[df['Type'] == 'Domain']
+        df_ip_temp = df.loc[df['Type'] == 'IP']
+        df_hash_temp = df.loc[df['Type'] == 'Hash']
+
+        df_hash = df_hash_temp.dropna(axis=1, how='all')
+        df_url = df_url_temp.dropna(axis=1, how='all')
+        df_ip = df_ip_temp.dropna(axis=1, how='all')
+        df_domain = df_domain_temp.dropna(axis=1, how='all')
+
+        with pd.ExcelWriter('{}.xlsx'.format(report_file)) as writer:
+            df_domain.to_excel(writer, sheet_name='Domains')
+            df_ip.to_excel(writer, sheet_name='IPs')
+            df_url.to_excel(writer, sheet_name='URLs')
+            df_hash.to_excel(writer, sheet_name='Hashes')
+
     except PermissionError:
         sys.stdout.write('Error Saving File, check if the file is being used!')
 

@@ -17,7 +17,7 @@ go to the root of the project and run **pip install -r requirements.txt**
 
 With the required modules installed you can now use the script to generate your reports.
 
-i.e. python vitee.py -i source.txt -o dest.csv -m 1
+i.e. python vitee.py -i source.txt -o dest -m 1
 
 Once you run the command you will see the following window, which details the IOCs to be queried after removing duplicates.
 
@@ -32,7 +32,7 @@ You can run python vitee.py -h to get the help menu
 required arguments:
 
     -i, --infile  Input File (takes txt and csv)
-    -o, --outfile Output File (returns csv, there's no need to add .csv extension to the file name)
+    -o, --outfile Output File (returns xlsx, there's no need to add .xlsx extension to the file name)
 
 optional arguments:
 

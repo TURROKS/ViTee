@@ -1,5 +1,5 @@
 venv/
-test.py
+tests/
 Tests/test1.py
 Tests/test2.py
 .idea
