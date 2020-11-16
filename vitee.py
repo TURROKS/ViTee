@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin python
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
@@ -70,8 +70,8 @@ def comb_files(report_file):
                 for line in temp:
                     report.write(line)
 
-    header_list = ['Field',
-                   'Type',
+    header_list = ['Type',
+                   'Field',
                    'IOC'
                    'Country',
                    'AS_Owner',
