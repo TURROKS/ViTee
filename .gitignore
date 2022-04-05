@@ -5,6 +5,8 @@ Tests/test2.py
 .idea
 .DS_Store
 
+config.ini
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
