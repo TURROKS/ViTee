@@ -2,10 +2,11 @@
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
+DOMAIN_REGEX = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
 HEADERS = ['Type',
            'Field',
            'IOC',
