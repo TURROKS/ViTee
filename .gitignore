@@ -1,7 +1,4 @@
 venv/
-tests/
-Tests/test1.py
-Tests/test2.py
 .idea
 .DS_Store
 
