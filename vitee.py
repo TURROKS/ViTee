@@ -30,13 +30,6 @@ parser.add_argument('-u', '--update', help='Update API')
 
 # Global Arguments
 args = parser.parse_args()
-IPs = []
-Hashes = []
-URLs = []
-Files = []
-Emails = []
-Domains = []
-Total_IOCs = 0
 
 
 def update_key(api_key):
