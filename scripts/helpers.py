@@ -3,20 +3,31 @@
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
 import glob
+import iocextract
 import os
 import requests
-from termcolor import colored
 import sys
+from termcolor import colored
+from time import sleep
 import pandas as pd
 import scripts.constants as const
 
 
-def clean_dir():
+IPs = []
+Hashes = []
+URLs = []
+Files = []
+Emails = []
+Domains = []
+Total_IOCs = 0
+
+
+def clean_temp_files():
     """This Function removes all temp files created for the reports"""
     for f in glob.glob('*_result_*.txt'):
 
@@ -33,7 +44,7 @@ def clean_dir():
             pass
 
 
-def comb_files(report_file):
+def combine_files(report_file):
     """This Function combines all the temp files"""
     with open('temp_report.csv', 'w', encoding='UTF8') as report:
 
@@ -64,7 +75,7 @@ def comb_files(report_file):
         sys.stdout.write('Error Saving File, check if the file is being used!')
 
 
-def ip_report(api_k, counter, ip):
+def create_ip_report(api_k, counter, ip):
     """This Function checks IPs against VirusTotal"""
     with open('IP_result_{}.txt'.format(counter), 'w') as dest:
 
@@ -189,7 +200,7 @@ def ip_report(api_k, counter, ip):
             pass
 
 
-def domain_report(api_k, counter, domain):
+def create_domain_report(api_k, counter, domain):
     """This Function checks Domains against VirusTotal"""
 
     with open('Domain_result_{}.txt'.format(counter), 'w') as dest:
@@ -364,7 +375,7 @@ def domain_report(api_k, counter, domain):
             pass
 
 
-def url_report(api_k, counter, url_check):
+def create_url_report(api_k, counter, url_check):
     """This Function checks Domains against VirusTotal"""
 
     with open('URL_result_{}.txt'.format(counter), 'w') as dest:
@@ -445,7 +456,7 @@ def url_report(api_k, counter, url_check):
             pass
 
 
-def hash_report(api_k, counter, hash_check):
+def create_hash_report(api_k, counter, hash_check):
     """This Function checks Domains against VirusTotal"""
 
     with open('Hash_result_{}.txt'.format(counter), 'w') as dest:
@@ -537,7 +548,7 @@ def hash_report(api_k, counter, hash_check):
             pass
 
 
-def wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, domain_list):
+def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, domain_list):
 
     if api_type == 1:
 
@@ -571,3 +582,94 @@ def wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, dom
             sys.stdout.write('\n')
     else:
         sys.stdout.write("Wrong Selection")
+
+
+def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
+
+    # Variables
+    ip_file_cnt = 0
+    dom_file_cnt = 0
+    url_file_cnt = 0
+    hash_file_cnt = 0
+
+    sys.stdout.write(colored(const.LOGO, 'green'))
+    sys.stdout.write('\n')
+    sys.stdout.write('You have selected the {} API version'.format(api_version))
+    sys.stdout.write('\n')
+    sys.stdout.write('\n')
+    sys.stdout.write('### Checking Unique IOCs ###')
+    sys.stdout.write('\n')
+
+    with open(inf, 'r') as file:
+        # Check the input file for IOCs
+        for line in file:
+
+            for ip in iocextract.extract_ipv4s(line, refang=True):
+                if ip not in IPs:
+                    IPs.append(ip)
+                    sys.stdout.write(ip)
+                    sys.stdout.write('\n')
+                else:
+                    pass
+
+            for dom in iocextract.extract_custom_iocs(line, const.DOMAIN_REGEX):
+                if dom not in Domains:
+                    Domains.append(dom)
+                    sys.stdout.write(dom)
+                    sys.stdout.write('\n')
+                else:
+                    pass
+
+            for url in iocextract.extract_urls(line, refang=True):
+                if url not in URLs:
+                    URLs.append(url)
+                    sys.stdout.write(url)
+                    sys.stdout.write('\n')
+                else:
+                    pass
+
+            for hash_check in iocextract.extract_hashes(line):
+                if hash_check not in Hashes:
+                    Hashes.append(hash_check)
+                    sys.stdout.write(hash_check)
+                    sys.stdout.write('\n')
+                else:
+                    pass
+
+        sys.stdout.write('\n')
+        calculate_wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
+        sys.stdout.write('\n')
+        sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
+        sys.stdout.write('\n')
+
+        # Get the IPs from the list to be queried
+        for ip in IPs:
+            create_ip_report(api_key, ip_file_cnt, ip)
+            ip_file_cnt += 1
+            sleep(wait_time)
+
+        for dom in Domains:
+            create_domain_report(api_key, dom_file_cnt, dom)
+            dom_file_cnt += 1
+            sleep(wait_time)
+
+        for url in URLs:
+            create_url_report(api_key, url_file_cnt, url)
+            url_file_cnt += 1
+            sleep(wait_time)
+
+        for hash_check in Hashes:
+            create_hash_report(api_key, hash_file_cnt, hash_check)
+            hash_file_cnt += 1
+            sleep(wait_time)
+
+
+def request_handler(api_k, inf, api_type):
+
+    if api_type == 1:
+        virustotal_analyzer(api_k, api_type, inf, 15, 'Free')
+    elif api_type == 2:
+        virustotal_analyzer(api_k, api_type, inf, 1, 'Paid')
+    else:
+        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
+        sys.stdout.write('\n')
