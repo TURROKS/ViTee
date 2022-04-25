@@ -10,12 +10,12 @@ __status__ = "Production"
 import glob
 import iocextract
 import os
+import pandas as pd
 import requests
+import scripts.constants as const
 import sys
 from termcolor import colored
 from time import sleep
-import pandas as pd
-import scripts.constants as const
 
 
 IPs = []

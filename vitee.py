@@ -6,12 +6,13 @@ __version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
-import sys
+
 import argparse
+from colorama import init
 import configparser
 from termcolor import colored
-from colorama import init
 import scripts.helpers as funcs
+import sys
 
 init()
 # ConfigParser Setup
