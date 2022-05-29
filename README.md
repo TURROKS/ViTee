@@ -36,7 +36,17 @@ Output Example
 
 **REPORT**
 
+1. Domains
 
+![Domains](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.41.47.png)
+
+2. IP Addresses
+
+![IPs](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.42.18.png)
+
+3. Hashes
+
+![Hashes](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.42.44.png)
 
 You can save your API in the config by running
 
