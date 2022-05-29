@@ -29,8 +29,14 @@ Once you run the command you will see the following window, which details the IO
 ![Startup](https://github.com/TURROKS/ViTee/blob/master/misc/startup.png)  
   
 Output Example  
-  
+
+**CLI**
+
 ![Results](https://github.com/TURROKS/ViTee/blob/master/misc/results.PNG)  
+
+**REPORT**
+
+
 
 You can save your API in the config by running
 
