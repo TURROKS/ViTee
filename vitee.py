@@ -50,6 +50,7 @@ def main():
     elif args.api:
         # Check that the user has provided both input and output files
         if args.infile and args.outfile:
+            funcs.clean_temp_files()
             funcs.request_handler(args.api, args.infile, args.membership)
             funcs.combine_files(args.outfile)
             funcs.clean_temp_files()

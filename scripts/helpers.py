@@ -8,6 +8,7 @@ __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
 import glob
+import base64
 import iocextract
 import os
 import pandas as pd
@@ -16,7 +17,6 @@ import scripts.constants as const
 import sys
 from termcolor import colored
 from time import sleep
-
 
 IPs = []
 Hashes = []
@@ -376,40 +376,46 @@ def create_domain_report(api_k, counter, domain):
 
 
 def create_url_report(api_k, counter, url_check):
-    """This Function checks Domains against VirusTotal"""
+    """This Function checks URLs against VirusTotal"""
 
     with open('URL_result_{}.txt'.format(counter), 'w') as dest:
 
         url = const.VT_URL_URL
-        params = {'apikey': api_k, 'resource': url_check}
-        response = requests.get(url, params=params)
-        data = response.json()
-        url_filter = ['clean site', 'unrated site']
-        temp_url = []
+        url_id = base64.urlsafe_b64encode(url_check.encode()).decode().strip("=")
+        headers = {'Accept': "application/json", 'x-apikey': api_k}
+        response = requests.get(url + url_id, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            url_filter = ['clean', 'unrated']
+            temp_url = []
+            # sub data frames to simplify reading the keys
+            attributes_df = data['data']['attributes']
+            scan_results_df = data['data']['attributes']['last_analysis_results']
+            total = 100
 
-        if data['response_code'] == 1:
+            for data_key in scan_results_df:
 
-            for data_key in data['scans']:
-
-                if data['scans'][data_key]['result'] not in url_filter:
+                if scan_results_df[data_key]['result'] not in url_filter:
 
                     dest.write('URL,')
                     dest.write(url_check.strip() + ',')
                     dest.write(',,,,,,')
                     try:
-                        dest.write(data['url'] + ',')
+                        dest.write(attributes_df['url'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['positives']) + ',')
+                        dest.write(str(scan_results_df['malicious']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['total']) + ',')
+                        # for stat in attributes_df['last_analysis_stats']:
+                        #     total += stat[0]
+                        dest.write(str(total) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scan_date'] + ',')
+                        dest.write(str(attributes_df['last_submission_date']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     dest.write(',,,,,,,,,,,,,,,,,,')
@@ -418,42 +424,44 @@ def create_url_report(api_k, counter, url_check):
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['scans'][data_key]['detected']) + ',')
+                        dest.write(str(scan_results_df[data_key]['engine_name']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scans'][data_key]['result'] + '\n')
+                        dest.write(scan_results_df[data_key]['result'] + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
                     if url_check not in temp_url:
                         temp_url.append(url_check)
                         sys.stdout.write(
-                            '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'red'),
-                                                    url_check))
+                            '({}/{}) URL {}'.format(str(total), colored(str(attributes_df['last_analysis_stats']
+                                                                            ['malicious']), 'red'), url_check))
                         sys.stdout.write('\n')
                     else:
                         pass
-                else:
-                    if url_check not in temp_url:
-                        if int(data['positives']) == 0:
-                            temp_url.append(url_check)
-                            sys.stdout.write(
-                                '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
-                                                        url_check))
-                            sys.stdout.write('\n')
-                        else:
-                            pass
-                    else:
-                        pass
-        elif data['response_code'] == 0:
-            if url_check in temp_url:
-                pass
-            else:
-                temp_url.append(url_check)
-                sys.stdout.write(colored('URL {} not found in Virus Total', 'green').format(url_check))
-                sys.stdout.write('\n')
+                # else:
+                #     if url_check not in temp_url:
+                #         if int(data['positives']) == 0:
+                #             temp_url.append(url_check)
+                #             sys.stdout.write(
+                #                 '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
+                #                                         url_check))
+                #             sys.stdout.write('\n')
+                #         else:
+                #             pass
+                #     else:
+                #         pass
+        # elif data['response_code'] == 0:
+        #     if url_check in temp_url:
+        #         pass
+        #     else:
+        #         temp_url.append(url_check)
+        #         sys.stdout.write(colored('URL {} not found in Virus Total', 'green').format(url_check))
+        #         sys.stdout.write('\n')
+        # else:
+        #     pass
         else:
-            pass
+            sys.stdout.write("{} Not Found".format(url_check))
 
 
 def create_hash_report(api_k, counter, hash_check):
@@ -549,20 +557,20 @@ def create_hash_report(api_k, counter, hash_check):
 
 
 def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email_list, domain_list):
-
     if api_type == 1:
 
-        count = (len(ip_list) + len(hash_list) + len(url_list) + len(file_list) + len(email_list) + len(domain_list))*15
+        count = (len(ip_list) + len(hash_list) + len(url_list) + len(file_list) + len(email_list) + len(
+            domain_list)) * 15
 
         if count < 60:
             sys.stdout.write("Approximate wait time {} Seconds..".format(count))
             sys.stdout.write('\n')
         elif 60 <= count < 3600:
-            mins = count/60
+            mins = count / 60
             sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
             sys.stdout.write('\n')
         else:
-            hours = (count/60)/60
+            hours = (count / 60) / 60
             sys.stdout.write("Approximate wait time {} Hours..".format(hours))
             sys.stdout.write('\n')
     elif api_type == 2:
@@ -573,11 +581,11 @@ def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email
             sys.stdout.write("Approximate wait time {} Seconds..".format(count))
             sys.stdout.write('\n')
         elif 60 <= count < 3600:
-            mins = count/60
+            mins = count / 60
             sys.stdout.write("Approximate wait time {} Minutes..".format(mins))
             sys.stdout.write('\n')
         else:
-            hours = (count/60)/60
+            hours = (count / 60) / 60
             sys.stdout.write("Approximate wait time {} Hours..".format(hours))
             sys.stdout.write('\n')
     else:
@@ -585,7 +593,6 @@ def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email
 
 
 def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
-
     # Variables
     ip_file_cnt = 0
     dom_file_cnt = 0
@@ -657,15 +664,14 @@ def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
             create_url_report(api_key, url_file_cnt, url)
             url_file_cnt += 1
             sleep(wait_time)
-
-        for hash_check in Hashes:
-            create_hash_report(api_key, hash_file_cnt, hash_check)
-            hash_file_cnt += 1
-            sleep(wait_time)
+        #
+        # for hash_check in Hashes:
+        #     create_hash_report(api_key, hash_file_cnt, hash_check)
+        #     hash_file_cnt += 1
+        #     sleep(wait_time)
 
 
 def request_handler(api_k, inf, api_type):
-
     if api_type == 1:
         virustotal_analyzer(api_k, api_type, inf, 15, 'Free')
     elif api_type == 2:
