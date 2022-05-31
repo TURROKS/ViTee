@@ -9,8 +9,7 @@ __status__ = "Production"
 DOMAIN_REGEX = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
 HEADERS = ['Type',
            'Field',
-           'IOC',
-           'Country',
+           'IOCCountry',
            'AS_Owner',
            'Continent',
            'resolutions_last_resolved',
@@ -65,4 +64,5 @@ LOGO = """
 VT_DOMAIN_URL = 'https://www.virustotal.com/vtapi/v2/domain/report'
 VT_HASH_URL = 'https://www.virustotal.com/vtapi/v2/file/report'
 VT_IP_URL = 'https://www.virustotal.com/vtapi/v2/ip-address/report'
-VT_URL_URL = 'https://www.virustotal.com/vtapi/v2/url/report'
+# VT_URL_URL = 'https://www.virustotal.com/vtapi/v2/url/report'
+VT_URL_URL = 'https://www.virustotal.com/api/v3/urls/'
