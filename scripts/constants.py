@@ -61,7 +61,7 @@ LOGO = """
   \:\__|:|__|      \::/  / \/__\:\  \      \:\/:/  /     \:\/:/  /  
    \::::/__/       /:/  /       \:\__\      \::/  /       \::/  /   
     ~~~~           \/__/         \/__/       \/__/         \/__/    
-    """
+                                                          BY TURROKS"""
 VT_DOMAIN_URL = 'https://www.virustotal.com/vtapi/v2/domain/report'
 VT_HASH_URL = 'https://www.virustotal.com/vtapi/v2/file/report'
 VT_IP_URL = 'https://www.virustotal.com/vtapi/v2/ip-address/report'
