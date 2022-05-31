@@ -381,7 +381,7 @@ def create_url_report(api_k, counter, url_check):
 
     with open('URL_result_{}.txt'.format(counter), 'w') as dest:
 
-        url = const.VT_URL_URL
+        url = const.VT3_URL_URL
         url_id = base64.urlsafe_b64encode(url_check.encode()).decode().strip("=")
         headers = {'Accept': "application/json", 'x-apikey': api_k}
         response = requests.get(url + url_id, headers=headers)
@@ -445,26 +445,33 @@ def create_url_report(api_k, counter, url_check):
                     else:
                         pass
         else:
-            sys.stdout.write("{} Not Found".format(url_check))
+            sys.stdout.write("{} returned Error Code {}".format(url_check, response.status_code) + '\n')
 
 
 def create_hash_report(api_k, counter, hash_check):
-    """This Function checks Domains against VirusTotal"""
+    """This Function checks Hashes against VirusTotal"""
 
     with open('Hash_result_{}.txt'.format(counter), 'w') as dest:
 
-        url = const.VT_HASH_URL
-        params = {'apikey': api_k, 'resource': hash_check}
-        response = requests.get(url, params=params)
+        url = const.VT3_HASH_URL
+        headers = {'Accept': 'application/json', 'x-apikey': api_k}
+        response = requests.get(url+hash_check, headers=headers)
         data = response.json()
+        scan_filter = ['malicious', 'suspicious']
+        results_filter = ['malicious', 'suspicious', 'harmless', 'undetected']
+        # store dictionaries to simplify reading the keys
+        attributes_df = data['data']['attributes']
+        scan_results_df = data['data']['attributes']['last_analysis_results']
         temp_hash = []
 
-        if data['response_code'] == 1:
+        if response.status_code == 200:
 
-            for data_key in data['scans']:
+            for data_key in scan_results_df:
 
-                if data['scans'][data_key]['detected']:
+                if scan_results_df[data_key]['category'] in scan_filter:
 
+                    malicious_total = 0
+                    scan_total = 0
                     dest.write('Hash,')
                     dest.write(hash_check.strip() + ',')
                     dest.write(',,,,,,,,,,,,,,,,,,,,,,,,,,,,')
@@ -473,70 +480,60 @@ def create_hash_report(api_k, counter, hash_check):
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['scans'][data_key]['detected']) + ',')
+                        for key, value in attributes_df['last_analysis_stats'].items():
+                            if key in scan_filter:
+                                malicious_total += value
+                        dest.write(str(malicious_total) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     dest.write(',')
                     try:
-                        dest.write(str(data['scans'][data_key]['version'] + ','))
+                        dest.write(str(scan_results_df[data_key]['engine_version'] + ','))
                     except (KeyError, IndexError, TypeError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scans'][data_key]['result'] + ',')
+                        dest.write(scan_results_df[data_key]['result'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['sha1'] + ',')
+                        dest.write(attributes_df['sha1'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['sha256'] + ',')
+                        dest.write(attributes_df['sha256'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['md5'] + ',')
+                        dest.write(attributes_df['md5'] + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['total']) + ',')
+                        for key, value in attributes_df['last_analysis_stats'].items():
+                            if key in results_filter:
+                                scan_total += value
+                        dest.write(str(scan_total) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(data['positives']) + ',')
+                        dest.write(str(attributes_df['last_analysis_stats']['malicious']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(data['scan_date'] + '\n')
+                        dest.write(str(datetime.fromtimestamp(attributes_df['last_analysis_date'])) + '\n')
                     except (KeyError, IndexError):
                         dest.write('' + '\n')
                     if hash_check not in temp_hash:
                         temp_hash.append(hash_check)
                         sys.stdout.write(
-                            '({}/{}) Hash {}'.format(str(data['total']), colored(str(data['positives']), 'red'),
-                                                     hash_check))
+                            '({}/{}) Hash {}'.format(str(scan_total), colored(str(attributes_df['last_analysis_stats']
+                                                                             ['malicious']), 'red'), hash_check))
                         sys.stdout.write('\n')
                     else:
                         pass
                 else:
-                    if hash_check not in temp_hash:
-                        if int(data['positives']) == 0:
-                            temp_hash.append(hash_check)
-                            sys.stdout.write(
-                                '({}/{}) Hash {}'.format(str(data['total']),
-                                                         colored(str(data['positives']), 'green'), hash_check))
-                            sys.stdout.write('\n')
-                        else:
-                            pass
-                    else:
-                        pass
-        elif data['response_code'] == 0:
-            if hash_check in temp_hash:
-                pass
-            else:
-                temp_hash.append(hash_check)
-                sys.stdout.write(colored('Hash {} not found in Virus Total', 'green').format(hash_check))
-                sys.stdout.write('\n')
+                    pass
         else:
+            sys.stdout.write("Error Code {}".format(response.status_code) + '\n')
             pass
 
 
@@ -633,7 +630,7 @@ def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
         sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
         sys.stdout.write('\n')
 
-        # Get the IPs from the list to be queried
+       # Get the IPs from the list to be queried
         for ip in IPs:
             create_ip_report(api_key, ip_file_cnt, ip)
             ip_file_cnt += 1
@@ -648,11 +645,11 @@ def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
             create_url_report(api_key, url_file_cnt, url)
             url_file_cnt += 1
             sleep(wait_time)
-        #
-        # for hash_check in Hashes:
-        #     create_hash_report(api_key, hash_file_cnt, hash_check)
-        #     hash_file_cnt += 1
-        #     sleep(wait_time)
+
+        for hash_check in Hashes:
+            create_hash_report(api_key, hash_file_cnt, hash_check)
+            hash_file_cnt += 1
+            sleep(wait_time)
 
 
 def request_handler(api_k, inf, api_type):

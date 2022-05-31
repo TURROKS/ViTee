@@ -64,5 +64,7 @@ LOGO = """
 VT_DOMAIN_URL = 'https://www.virustotal.com/vtapi/v2/domain/report'
 VT_HASH_URL = 'https://www.virustotal.com/vtapi/v2/file/report'
 VT_IP_URL = 'https://www.virustotal.com/vtapi/v2/ip-address/report'
-# VT_URL_URL = 'https://www.virustotal.com/vtapi/v2/url/report'
-VT_URL_URL = 'https://www.virustotal.com/api/v3/urls/'
+VT_URL_URL = 'https://www.virustotal.com/vtapi/v2/url/report'
+
+VT3_HASH_URL = 'https://www.virustotal.com/api/v3/files/'
+VT3_URL_URL = 'https://www.virustotal.com/api/v3/urls/'
