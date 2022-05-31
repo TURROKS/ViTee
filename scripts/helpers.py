@@ -7,8 +7,9 @@ __version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
-import glob
+from datetime import datetime
 import base64
+import glob
 import iocextract
 import os
 import pandas as pd
@@ -384,19 +385,22 @@ def create_url_report(api_k, counter, url_check):
         url_id = base64.urlsafe_b64encode(url_check.encode()).decode().strip("=")
         headers = {'Accept': "application/json", 'x-apikey': api_k}
         response = requests.get(url + url_id, headers=headers)
+
+        # Check if request was accepted by server
         if response.status_code == 200:
             data = response.json()
             url_filter = ['clean', 'unrated']
+            scan_filter = ['harmless', 'malicious', 'suspicious']
             temp_url = []
-            # sub data frames to simplify reading the keys
+            # store dictionaries to simplify reading the keys
             attributes_df = data['data']['attributes']
             scan_results_df = data['data']['attributes']['last_analysis_results']
-            total = 100
 
             for data_key in scan_results_df:
 
                 if scan_results_df[data_key]['result'] not in url_filter:
 
+                    total = 0
                     dest.write('URL,')
                     dest.write(url_check.strip() + ',')
                     dest.write(',,,,,,')
@@ -405,17 +409,18 @@ def create_url_report(api_k, counter, url_check):
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(scan_results_df['malicious']) + ',')
+                        dest.write(str(attributes_df['last_analysis_stats']['malicious']) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        # for stat in attributes_df['last_analysis_stats']:
-                        #     total += stat[0]
+                        for key, value in attributes_df['last_analysis_stats'].items():
+                            if key in scan_filter:
+                                total += value
                         dest.write(str(total) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     try:
-                        dest.write(str(attributes_df['last_submission_date']) + ',')
+                        dest.write(str(datetime.fromtimestamp(attributes_df['last_submission_date'])) + ',')
                     except (KeyError, IndexError):
                         dest.write('' + ',')
                     dest.write(',,,,,,,,,,,,,,,,,,')
@@ -439,27 +444,6 @@ def create_url_report(api_k, counter, url_check):
                         sys.stdout.write('\n')
                     else:
                         pass
-                # else:
-                #     if url_check not in temp_url:
-                #         if int(data['positives']) == 0:
-                #             temp_url.append(url_check)
-                #             sys.stdout.write(
-                #                 '({}/{}) URL {}'.format(str(data['total']), colored(str(data['positives']), 'green'),
-                #                                         url_check))
-                #             sys.stdout.write('\n')
-                #         else:
-                #             pass
-                #     else:
-                #         pass
-        # elif data['response_code'] == 0:
-        #     if url_check in temp_url:
-        #         pass
-        #     else:
-        #         temp_url.append(url_check)
-        #         sys.stdout.write(colored('URL {} not found in Virus Total', 'green').format(url_check))
-        #         sys.stdout.write('\n')
-        # else:
-        #     pass
         else:
             sys.stdout.write("{} Not Found".format(url_check))
 
