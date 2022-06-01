@@ -26,7 +26,7 @@ With the required modules installed you can now use the script to generate your 
   
 Once you run the command you will see the following window, which details the IOCs to be queried after removing duplicates.  
   
-![Startup](https://github.com/TURROKS/ViTee/blob/master/misc/startup.png)  
+![Startup](https://github.com/TURROKS/ViTee/blob/master/docs/misc/startup.png)  
   
 Output Example  
 
@@ -38,15 +38,15 @@ Output Example
 
 1. Domains
 
-![Domains](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.41.47.png)
+![Domains](https://github.com/TURROKS/ViTee/blob/master/dcos/misc/domains.png)
 
 2. IP Addresses
 
-![IPs](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.42.18.png)
+![IPs](https://github.com/TURROKS/ViTee/blob/master/docs/misc/ips.png)
 
 3. Hashes
 
-![Hashes](https://github.com/TURROKS/ViTee/blob/master/misc/Screenshot%202022-05-29%20at%2016.42.44.png)
+![Hashes](https://github.com/TURROKS/ViTee/blob/master/docs/misc/hashes.png)
 
 You can save your API in the config by running
 
