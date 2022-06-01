@@ -32,13 +32,13 @@ Output Example
 
 **CLI**
 
-![Results](https://github.com/TURROKS/ViTee/blob/master/misc/results.PNG)  
+![Results](https://github.com/TURROKS/ViTee/blob/master/docs/misc/results.PNG)  
 
 **REPORT**
 
 1. Domains
 
-![Domains](https://github.com/TURROKS/ViTee/blob/master/dcos/misc/domains.png)
+![Domains](https://github.com/TURROKS/ViTee/blob/master/docs/misc/domains.png)
 
 2. IP Addresses
 
