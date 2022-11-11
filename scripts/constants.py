@@ -6,7 +6,8 @@ __version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
-DOMAIN_REGEX = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
+# DOMAIN_REGEX = ['^([a-z0-9]{1,61}.[a-z]{2,})$']
+DOMAIN_REGEX = ['(.+[-_a-z0-9]{1,61}.[a-z]{2,})$']
 HEADERS = ['Type',
            'Field',
            'IOCCountry',
