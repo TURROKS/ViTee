@@ -269,7 +269,7 @@ def create_domain_report(api_k, counter, domain):
                 except (KeyError, IndexError):
                     dest.write('' + ',')
                 try:
-                    dest.write(data['detected_urls'][item]['url'] + ',')
+                    dest.write('"{}",'.format(data['detected_urls'][item]['url']))
                 except (KeyError, IndexError):
                     dest.write('' + ',')
                 try:
