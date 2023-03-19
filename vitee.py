@@ -13,7 +13,9 @@ from colorama import init
 import configparser
 from termcolor import colored
 
-import scripts.helpers as funcs
+from scripts.helpers import clean_temp_files
+from scripts.helpers import combine_files
+from scripts.vt_connector import virustotal_analyzer
 
 
 init()
@@ -36,6 +38,17 @@ parser.add_argument('-u', '--update', help='Update API')
 args = parser.parse_args()
 
 
+# Function that initiates the connection to VT
+def request_handler(api_key, api_type, inputs_file=None, string=None):
+
+    if api_type == 1:
+        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=15, api_version='Free')
+    elif api_type == 2:
+        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=1, api_version='Paid')
+    else:
+        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid'+'\n')
+
+
 def update_key(api_key):
     """This Function Updates the API"""
     config.set('access', 'key', api_key)
@@ -53,15 +66,16 @@ if __name__ == '__main__':
     elif args.api:
         # Check that the user has provided both input and output files
         if args.string:
-            funcs.clean_temp_files()
-            funcs.request_handler(api_key=args.api, string=args.string, api_type=args.membership)
-            funcs.combine_files(args.output)
-            funcs.clean_temp_files()
+            pass
+            clean_temp_files()
+            request_handler(api_key=args.api, string=args.string, api_type=args.membership)
+            combine_files(args.output)
+            clean_temp_files()
         elif args.file and args.output:
-            funcs.clean_temp_files()
-            funcs.request_handler(api_key=args.api, inputs_file=args.file, api_type=args.membership)
-            funcs.combine_files(args.output)
-            funcs.clean_temp_files()
+            clean_temp_files()
+            request_handler(api_key=args.api, inputs_file=args.file, api_type=args.membership)
+            combine_files(args.output)
+            clean_temp_files()
         else:
             sys.stdout.write('Missing Parameters' + '\n')
     else:

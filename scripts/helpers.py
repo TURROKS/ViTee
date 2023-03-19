@@ -1,23 +1,22 @@
-#!/usr/bin python3
-# This file contains the functions that create the reports
+#!/usr/bin/env python3
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
-from datetime import datetime
 import base64
+from datetime import datetime
 import glob
-import iocextract
 import os
-import pandas as pd
 import requests
-import scripts.constants as const
 import sys
+
+import pandas as pd
 from termcolor import colored
-from time import sleep
+
+import scripts.constants as const
 
 IPs = []
 Hashes = []
@@ -556,7 +555,7 @@ def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email
             sys.stdout.write('\n')
     elif api_type == 2:
 
-        count = (ip_list + hash_list + url_list + file_list + email_list + domain_list)
+        count = (len(ip_list) + len(hash_list) + len(url_list) + len(file_list) + len(email_list) + len(domain_list))
 
         if count < 60:
             sys.stdout.write("Approximate wait time {} Seconds..".format(count))
@@ -571,93 +570,3 @@ def calculate_wait_time(api_type, ip_list, hash_list, url_list, file_list, email
             sys.stdout.write('\n')
     else:
         sys.stdout.write("Wrong Selection")
-
-
-def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
-    # Variables
-    ip_file_cnt = 0
-    dom_file_cnt = 0
-    url_file_cnt = 0
-    hash_file_cnt = 0
-
-    sys.stdout.write(colored(const.LOGO, 'green'))
-    sys.stdout.write('\n')
-    sys.stdout.write('You have selected the {} API version'.format(api_version))
-    sys.stdout.write('\n')
-    sys.stdout.write('\n')
-    sys.stdout.write('### Checking Unique IOCs ###')
-    sys.stdout.write('\n')
-
-    with open(inf, 'r') as file:
-        # Check the input file for IOCs
-        for line in file:
-
-            for ip in iocextract.extract_ipv4s(line, refang=True):
-                if ip not in IPs:
-                    IPs.append(ip)
-                    sys.stdout.write(ip)
-                    sys.stdout.write('\n')
-                else:
-                    pass
-
-            for dom in iocextract.extract_custom_iocs(line, const.DOMAIN_REGEX):
-                if dom not in Domains:
-                    Domains.append(dom)
-                    sys.stdout.write(dom)
-                    sys.stdout.write('\n')
-                else:
-                    pass
-
-            for url in iocextract.extract_urls(line, refang=True):
-                if url not in URLs:
-                    URLs.append(url)
-                    sys.stdout.write(url)
-                    sys.stdout.write('\n')
-                else:
-                    pass
-
-            for hash_check in iocextract.extract_hashes(line):
-                if hash_check not in Hashes:
-                    Hashes.append(hash_check)
-                    sys.stdout.write(hash_check)
-                    sys.stdout.write('\n')
-                else:
-                    pass
-
-        sys.stdout.write('\n')
-        calculate_wait_time(api_type, IPs, Hashes, URLs, Files, Emails, Domains)
-        sys.stdout.write('\n')
-        sys.stdout.write('VT Detection Ratio Total_Samples/Detection Count')
-        sys.stdout.write('\n')
-
-       # Get the IPs from the list to be queried
-        for ip in IPs:
-            create_ip_report(api_key, ip_file_cnt, ip)
-            ip_file_cnt += 1
-            sleep(wait_time)
-
-        for dom in Domains:
-            create_domain_report(api_key, dom_file_cnt, dom)
-            dom_file_cnt += 1
-            sleep(wait_time)
-
-        for url in URLs:
-            create_url_report(api_key, url_file_cnt, url)
-            url_file_cnt += 1
-            sleep(wait_time)
-
-        for hash_check in Hashes:
-            create_hash_report(api_key, hash_file_cnt, hash_check)
-            hash_file_cnt += 1
-            sleep(wait_time)
-
-
-# Function that calls on the correct connector depending on the API type
-def request_handler(api_key, api_type, inputs_file=None, string=None):
-
-    if api_type == 1:
-        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=15, api_version='Free')
-    elif api_type == 2:
-        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=1, api_version='Paid')
-    else:
-        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid'+'\n')
