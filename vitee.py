@@ -42,9 +42,9 @@ args = parser.parse_args()
 def request_handler(api_key, api_type, inputs_file=None, string=None):
 
     if api_type == 1:
-        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=15, api_version='Free')
+        virustotal_analyzer(api_key=api_key, api_type=api_type, input_file=inputs_file, wait_time=15, api_version='Free')
     elif api_type == 2:
-        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=1, api_version='Paid')
+        virustotal_analyzer(api_key=api_key, api_type=api_type, input_file=inputs_file, wait_time=1, api_version='Paid')
     else:
         sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid'+'\n')
 

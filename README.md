@@ -64,7 +64,7 @@ You can run python vitee.py -h to get the help menu
  
 | Flag         | Description                                                                         |
 |--------------|-------------------------------------------------------------------------------------|
-| -f, --file   | inputs File -takes txt and csv                                                      |
+| -i, --file   | inputs File -takes txt and csv                                                      |
 | -o, --output | Output File - returns xlsx, there's no need to add .xlsx extension to the file name |
 | -a, --api    | Manually Enter API  Unless you save your Key (See optional arguments)               |
 

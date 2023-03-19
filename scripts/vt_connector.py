@@ -30,7 +30,7 @@ Domains = []
 Total_IOCs = 0
 
 
-def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
+def virustotal_analyzer(api_key, api_type, input_file, wait_time, api_version):
 
     # Variables
     ip_file_cnt = 0
@@ -42,7 +42,7 @@ def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
     sys.stdout.write(f'You have selected the {api_version} API version'+'\n\n')
     sys.stdout.write('### Checking Unique IOCs ###' + '\n')
 
-    with open(inf, 'r') as file:
+    with open(input_file, 'r') as file:
         # Check the input file for IOCs
         for line in file:
 
