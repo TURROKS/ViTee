@@ -1,12 +1,15 @@
 # ViTee  
 **ViTee is tool based in Python that allows you to leverage Virus Total's API**  
   
-ViTee allows you to provide a single source file with your IOCs and get a report for the below    
+ViTee allows you to provide a single source file with your IOCs, it **automatically extracts and parses** the following types of IOCs
+
  * URLs  
  * IPs  
  * Domains  
  * Hashes  
-     
+
+It then checks each unique IOC against VirusTotal and generates a report with unique tabs per IOC type.
+
 I recommend creating a Virtual Environment (venv) to avoid changing your base Python's setup.  [Instructions here](https://docs.python.org/3/library/venv.html)
  
 ### Installation
