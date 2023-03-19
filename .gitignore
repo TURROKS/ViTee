@@ -4,6 +4,9 @@ venv/
 
 config.ini
 
+__pycache__/
+scripts/__pycache__/
+
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
