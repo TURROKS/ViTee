@@ -25,7 +25,7 @@ key = config.get('access', 'key')
 # ArgParser Setup
 parser = argparse.ArgumentParser(description="Leverage Virus Total's Free or Paid APIs",
                                  epilog='Enjoy the tool')
-parser.add_argument('-i', '--inputs', type=str, help='Inputs File')
+parser.add_argument('-f', '--file', type=str, help='Inputs File')
 parser.add_argument('-o', '--output', type=str, help='Output File')
 parser.add_argument('-a', '--api', type=str, default=key, help='Enter API key manually')
 parser.add_argument('-m', '--membership', type=int, default=1, choices=[1, 2], help='API Type 1=Free(Default), 2=Paid')
@@ -43,23 +43,20 @@ def update_key(api_key):
     sys.stdout.write('Your API {} has been updated'.format(args.update) +'\n')
 
 
-def main():
-    """Check if user wants to update API"""
+if __name__ == '__main__':
+
+    # Check if user wants to update API
     if args.update:
         update_key(args.update)
     # Check if a valid API has been provided
     elif args.api:
         # Check that the user has provided both input and output files
-        if args.inputs and args.output:
+        if args.file and args.output:
             funcs.clean_temp_files()
-            funcs.request_handler(args.api, args.inputs, args.membership)
+            funcs.request_handler(args.api, args.file, args.membership)
             funcs.combine_files(args.output)
             funcs.clean_temp_files()
         else:
             sys.stdout.write('Missing Parameters' + '\n')
     else:
         sys.stdout.write(colored('No API found in conf', 'red') + '\n')
-
-
-if __name__ == '__main__':
-    main()

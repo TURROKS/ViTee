@@ -14,7 +14,7 @@ I recommend creating a Virtual Environment (venv) to avoid changing your base Py
  
 ### Installation
 
-You can install the required modules once the venv is ready and you have activated it.  
+You can install the required modules once the venv is ready, and you have activated it.  
   
 go to the root of the project and run
 
@@ -25,7 +25,7 @@ go to the root of the project and run
 
 With the required modules installed you can now use the script to generate your reports.  
   
-`python vitee.py -i source.txt -o dest -m 1 -a <YOUR API>`
+`python vitee.py -f source.txt -o dest -m 1 -a <YOUR API>`
   
 Once you run the command you will see the following window, which details the IOCs to be queried after removing duplicates.  
   
@@ -62,19 +62,19 @@ You can run python vitee.py -h to get the help menu
   
 **Required**
  
- |Flag|Description|
- |------------|----------------|
- |-i, --infile|input File -takes txt and csv|
- |-o, --outfile|Output File - returns xlsx, there's no need to add .xlsx extension to the file name|
- |-a, --api|Manually Enter API  Unless you save your Key (See optional arguments)|
+| Flag         | Description                                                                         |
+|--------------|-------------------------------------------------------------------------------------|
+| -f, --file   | inputs File -takes txt and csv                                                      |
+| -o, --output | Output File - returns xlsx, there's no need to add .xlsx extension to the file name |
+| -a, --api    | Manually Enter API  Unless you save your Key (See optional arguments)               |
 
 **Optional**
   
-|Flag|Description|
-|------|--------------|
- |-h, --help|show this help message and exit|
- |-m, --membership type| 1=Free **Default**, 2=Paid|
- |-u, --update|Update API|
+| Flag                  | Description                     |
+|-----------------------|---------------------------------|
+ | -h, --help            | show this help message and exit |
+ | -m, --membership type | 1=Free **Default**, 2=Paid      |
+ | -u, --update          | Update API                      |
 
 *Troubleshooting*  
   
