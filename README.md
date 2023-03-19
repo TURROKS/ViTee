@@ -25,7 +25,7 @@ go to the root of the project and run
 
 With the required modules installed you can now use the script to generate your reports.  
   
-`python vitee.py -f source.txt -o dest -m 1 -a <YOUR API>`
+`python vitee.py -i source.txt -o dest -m 1 -a <YOUR API>`
   
 Once you run the command you will see the following window, which details the IOCs to be queried after removing duplicates.  
   
