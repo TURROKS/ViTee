@@ -652,11 +652,12 @@ def virustotal_analyzer(api_key, api_type, inf, wait_time, api_version):
             sleep(wait_time)
 
 
-def request_handler(api_k, inf, api_type):
+# Function that calls on the correct connector depending on the API type
+def request_handler(api_key, api_type, inputs_file=None, string=None):
+
     if api_type == 1:
-        virustotal_analyzer(api_k, api_type, inf, 15, 'Free')
+        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=15, api_version='Free')
     elif api_type == 2:
-        virustotal_analyzer(api_k, api_type, inf, 1, 'Paid')
+        virustotal_analyzer(api_key=api_key, api_type=api_type, inf=inputs_file, wait_time=1, api_version='Paid')
     else:
-        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid')
-        sys.stdout.write('\n')
+        sys.stdout.write('Invalid Membership Type\nAvailable options are:\n\t1=Free\n\t2=Paid'+'\n')
