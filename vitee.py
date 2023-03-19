@@ -1,4 +1,4 @@
-#!/usr/bin python3
+#!/usr/bin/env python3
 
 __author__ = "Mario Rojas"
 __license__ = "MIT"
@@ -6,13 +6,15 @@ __version__ = "1.2.1"
 __maintainer__ = "Mario Rojas"
 __status__ = "Production"
 
+import sys
 
 import argparse
 from colorama import init
 import configparser
 from termcolor import colored
+
 import scripts.helpers as funcs
-import sys
+
 
 init()
 # ConfigParser Setup
@@ -21,11 +23,11 @@ config.read('config.ini')
 key = config.get('access', 'key')
 
 # ArgParser Setup
-parser = argparse.ArgumentParser(description="This Tool leverages Virus Total's API for reporting",
+parser = argparse.ArgumentParser(description="Leverage Virus Total's Free or Paid APIs",
                                  epilog='Enjoy the tool')
-parser.add_argument('-i', '--infile', type=str, help='Input File')
-parser.add_argument('-o', '--outfile', type=str, help='Output File')
-parser.add_argument('-a', '--api', type=str, default=key, help='Manually Enter API')
+parser.add_argument('-i', '--inputs', type=str, help='Inputs File')
+parser.add_argument('-o', '--output', type=str, help='Output File')
+parser.add_argument('-a', '--api', type=str, default=key, help='Enter API key manually')
 parser.add_argument('-m', '--membership', type=int, default=1, choices=[1, 2], help='API Type 1=Free(Default), 2=Paid')
 parser.add_argument('-u', '--update', help='Update API')
 
@@ -38,8 +40,7 @@ def update_key(api_key):
     config.set('access', 'key', api_key)
     with open('config.ini', 'w') as configFile:
         config.write(configFile)
-    sys.stdout.write('Your API {} has been updated'.format(args.update))
-    sys.stdout.write('\n')
+    sys.stdout.write('Your API {} has been updated'.format(args.update) +'\n')
 
 
 def main():
@@ -49,17 +50,15 @@ def main():
     # Check if a valid API has been provided
     elif args.api:
         # Check that the user has provided both input and output files
-        if args.infile and args.outfile:
+        if args.inputs and args.output:
             funcs.clean_temp_files()
-            funcs.request_handler(args.api, args.infile, args.membership)
-            funcs.combine_files(args.outfile)
+            funcs.request_handler(args.api, args.inputs, args.membership)
+            funcs.combine_files(args.output)
             funcs.clean_temp_files()
         else:
-            sys.stdout.write('Missing Parameters')
-            sys.stdout.write('\n')
+            sys.stdout.write('Missing Parameters' + '\n')
     else:
-        sys.stdout.write(colored('No API found in conf', 'red'))
-        sys.stdout.write('\n')
+        sys.stdout.write(colored('No API found in conf', 'red') + '\n')
 
 
 if __name__ == '__main__':
